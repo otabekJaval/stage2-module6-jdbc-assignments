@@ -31,19 +31,19 @@ public class SimpleJDBCRepository {
     private PreparedStatement ps = null;
     private Statement st = null;
 
-    public static void main(String[] args) {
-
-        SimpleJDBCRepository smr = new SimpleJDBCRepository();
-        try {
+//    public static void main(String[] args) {
+//
+//        SimpleJDBCRepository smr = new SimpleJDBCRepository();
+//        try {
 //            System.out.println("smr.createUser() = " + smr.createUser(new User(null,"Torres","Migel",18))); // passed
 //            System.out.println("smr.findUserById(1) = " + smr.findUserById(1L));
 //            smr.deleteUser(2L);
 //            System.out.println("smr.findAllUser() = " + smr.findAllUser());
 //            System.out.println(smr.findUserByName("Jack"));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     private static final String createUserSQL = "insert into myusers (firstname,lastname,age)values (?,?,?)returning id;";
     private static final String updateUserSQL = "update myusers t set t.firstname=?,t.lastname=?, t.age=?;";
