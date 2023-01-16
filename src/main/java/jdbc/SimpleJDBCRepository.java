@@ -33,7 +33,7 @@ public class SimpleJDBCRepository {
 
     public static void main(String[] args) {
 
-        SimpleJDBCRepository smr=new SimpleJDBCRepository();
+        SimpleJDBCRepository smr = new SimpleJDBCRepository();
         try {
             System.out.println("smr.createUser() = " + smr.createUser());
         } catch (SQLException e) {
@@ -48,11 +48,12 @@ public class SimpleJDBCRepository {
     private static final String findUserByNameSQL = "select * from myusers t where t.firstname=?;";
     private static final String findAllUserSQL = "select * from myusers;";
 
-    public Long createUser() throws SQLException {
+    public Long createUser(User user) throws SQLException {
         ps = cm.getConnection().prepareStatement(createUserSQL);
-        ps.setString(1, "SomeFName");
-        ps.setString(2, "SomeSName");
-        ps.setShort(3, (short) 1);
+        ps.setString(1, user.getFirstName());
+        ps.setString(2, user.getLastName());
+        ps.setInt(3, user.getAge());
+
         ResultSet resultSet = ps.executeQuery();
         resultSet.next();
         return resultSet.getLong("id");
@@ -115,7 +116,7 @@ public class SimpleJDBCRepository {
         return findUserById(1L);
     }
 
-    private void deleteUser(Long userId) throws SQLException {
+    public void deleteUser(Long userId) throws SQLException {
         ps = cm.getConnection().prepareStatement(deleteUser);
         ps.execute();
     }
