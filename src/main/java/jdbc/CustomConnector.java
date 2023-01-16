@@ -27,6 +27,9 @@ public class CustomConnector {
 
     public Connection getConnection() {
         try {
+            System.out.println("properties.getProperty(\"postgres.password\") = " + properties.getProperty("postgres.password"));
+            System.out.println(properties.getProperty("postgres.user"));
+
             return this.getConnection(properties.getProperty("postgres.url"), properties.getProperty("postgres.user"),
                     properties.getProperty("postgres.password"));
         } catch (SQLException e) {

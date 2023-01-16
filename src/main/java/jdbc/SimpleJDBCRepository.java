@@ -35,7 +35,7 @@ public class SimpleJDBCRepository {
 
         SimpleJDBCRepository smr = new SimpleJDBCRepository();
         try {
-            System.out.println("smr.createUser() = " + smr.createUser());
+            System.out.println("smr.createUser() = " + smr.createUser(new User(null,"Jack","Dorsey",12)));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
