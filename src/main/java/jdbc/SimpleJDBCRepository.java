@@ -6,9 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.io.IOException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,32 +17,106 @@ import java.util.List;
 @NoArgsConstructor
 public class SimpleJDBCRepository {
 
-    private Connection connection = null;
+    CustomConnector cm;
+
+    {
+        try {
+            cm = new CustomConnector();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Connection connection = cm.getConnection();
     private PreparedStatement ps = null;
     private Statement st = null;
 
-    private static final String createUserSQL = "";
-    private static final String updateUserSQL = "";
-    private static final String deleteUser = "";
-    private static final String findUserByIdSQL = "";
-    private static final String findUserByNameSQL = "";
-    private static final String findAllUserSQL = "";
+    public static void main(String[] args) {
 
-    public Long createUser() {
+        SimpleJDBCRepository smr=new SimpleJDBCRepository();
+        try {
+            System.out.println("smr.createUser() = " + smr.createUser());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public User findUserById(Long userId) {
+    private static final String createUserSQL = "insert into myusers (firstname,lastname,age)values (?,?,?)returning id;";
+    private static final String updateUserSQL = "update myusers t set t.firstname=?,t.lastname=?, t.age=?;";
+    private static final String deleteUser = "delete from myusers where t.id=?;";
+    private static final String findUserByIdSQL = "select * from myusers t where t.id=?;";
+    private static final String findUserByNameSQL = "select * from myusers t where t.firstname=?;";
+    private static final String findAllUserSQL = "select * from myusers;";
+
+    public Long createUser() throws SQLException {
+        ps = cm.getConnection().prepareStatement(createUserSQL);
+        ps.setString(1, "SomeFName");
+        ps.setString(2, "SomeSName");
+        ps.setShort(3, (short) 1);
+        ResultSet resultSet = ps.executeQuery();
+        resultSet.next();
+        return resultSet.getLong("id");
     }
 
-    public User findUserByName(String userName) {
+    public User findUserById(Long userId) throws SQLException {
+        ps = cm.getConnection().prepareStatement(findUserByIdSQL);
+        ps.setLong(1, userId);
+        ResultSet resultSet = ps.executeQuery();
+        resultSet.next();
+        User user = new User();
+
+        user.setAge(resultSet.getInt("age"));
+        user.setId(userId);
+        user.setFirstName(resultSet.getString("firstname"));
+        user.setLastName(resultSet.getString("lastname"));
+
+        return user;
     }
 
-    public List<User> findAllUser() {
+    public User findUserByName(String userName) throws SQLException {
+        ps = cm.getConnection().prepareStatement(findUserByNameSQL);
+        ps.setString(1, userName);
+        ResultSet resultSet = ps.executeQuery();
+
+
+        User user = new User();
+
+        user.setAge(resultSet.getInt("age"));
+        user.setId(resultSet.getLong("id"));
+        user.setFirstName(resultSet.getString("firstname"));
+        user.setLastName(resultSet.getString("lastname"));
+
+        return user;
+
     }
 
-    public User updateUser() {
+    public List<User> findAllUser() throws SQLException {
+        ps = cm.getConnection().prepareStatement(findAllUserSQL);
+        ResultSet resultSet = ps.executeQuery();
+
+        List<User> users = new ArrayList<>();
+
+        while (resultSet.next()) {
+            User user = new User();
+
+            user.setAge(resultSet.getInt("age"));
+            user.setId(resultSet.getLong("id"));
+            user.setFirstName(resultSet.getString("firstname"));
+            user.setLastName(resultSet.getString("lastname"));
+
+            users.add(user);
+        }
+
+        return users;
     }
 
-    private void deleteUser(Long userId) {
+    public User updateUser() throws SQLException {
+        ps = cm.getConnection().prepareStatement(updateUserSQL);
+        return findUserById(1L);
+    }
+
+    private void deleteUser(Long userId) throws SQLException {
+        ps = cm.getConnection().prepareStatement(deleteUser);
+        ps.execute();
     }
 }
