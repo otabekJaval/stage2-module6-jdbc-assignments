@@ -14,9 +14,12 @@
             <node kind="database" qname="@">
               <node kind="schema" qname="@" />
             </node>
+            <node kind="database" qname="myfirstdb">
+              <node kind="schema" qname="public" />
+            </node>
             <node kind="database">
-              <name qname="myfirstdb" />
               <name qname="advanced_sql" />
+              <name qname="postgres" />
             </node>
           </node>
         </introspection-scope>

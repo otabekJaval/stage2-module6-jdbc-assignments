@@ -35,7 +35,11 @@ public class SimpleJDBCRepository {
 
         SimpleJDBCRepository smr = new SimpleJDBCRepository();
         try {
-            System.out.println("smr.createUser() = " + smr.createUser(new User(null,"Jack","Dorsey",12)));
+//            System.out.println("smr.createUser() = " + smr.createUser(new User(null,"Torres","Migel",18))); // passed
+//            System.out.println("smr.findUserById(1) = " + smr.findUserById(1L));
+//            smr.deleteUser(2L);
+//            System.out.println("smr.findAllUser() = " + smr.findAllUser());
+//            System.out.println(smr.findUserByName("Jack"));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -43,7 +47,7 @@ public class SimpleJDBCRepository {
 
     private static final String createUserSQL = "insert into myusers (firstname,lastname,age)values (?,?,?)returning id;";
     private static final String updateUserSQL = "update myusers t set t.firstname=?,t.lastname=?, t.age=?;";
-    private static final String deleteUser = "delete from myusers where t.id=?;";
+    private static final String deleteUser = "delete from myusers where id=?;";
     private static final String findUserByIdSQL = "select * from myusers t where t.id=?;";
     private static final String findUserByNameSQL = "select * from myusers t where t.firstname=?;";
     private static final String findAllUserSQL = "select * from myusers;";
@@ -63,7 +67,14 @@ public class SimpleJDBCRepository {
         ps = cm.getConnection().prepareStatement(findUserByIdSQL);
         ps.setLong(1, userId);
         ResultSet resultSet = ps.executeQuery();
-        resultSet.next();
+
+        if (!resultSet.next()) {
+            return null;
+        }
+
+        if (resultSet.isLast()) {
+            return null;
+        }
         User user = new User();
 
         user.setAge(resultSet.getInt("age"));
@@ -79,16 +90,16 @@ public class SimpleJDBCRepository {
         ps.setString(1, userName);
         ResultSet resultSet = ps.executeQuery();
 
+        if (resultSet.next()) {
+            User user = new User();
 
-        User user = new User();
-
-        user.setAge(resultSet.getInt("age"));
-        user.setId(resultSet.getLong("id"));
-        user.setFirstName(resultSet.getString("firstname"));
-        user.setLastName(resultSet.getString("lastname"));
-
-        return user;
-
+            user.setAge(resultSet.getInt("age"));
+            user.setId(resultSet.getLong("id"));
+            user.setFirstName(resultSet.getString("firstname"));
+            user.setLastName(resultSet.getString("lastname"));
+            return user;
+        }
+        return null;
     }
 
     public List<User> findAllUser() throws SQLException {
@@ -118,6 +129,7 @@ public class SimpleJDBCRepository {
 
     public void deleteUser(Long userId) throws SQLException {
         ps = cm.getConnection().prepareStatement(deleteUser);
+        ps.setLong(1, userId);
         ps.execute();
     }
 }
