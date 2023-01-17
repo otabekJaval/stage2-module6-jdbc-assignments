@@ -56,113 +56,144 @@ public class SimpleJDBCRepository {
     private static final String findAllUserSQL = "select * from myusers;";
 
     public Long createUser(User user) throws SQLException {
-        ps = cm.getConnection().prepareStatement(createUserSQL);
-        ps.setString(1, user.getFirstName());
-        ps.setString(2, user.getLastName());
-        ps.setInt(3, user.getAge());
+        try {
+            ps = cm.getConnection().prepareStatement(createUserSQL);
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setInt(3, user.getAge());
 
-        ResultSet resultSet = ps.executeQuery();
-        resultSet.next();
-        return resultSet.getLong("id");
+            ResultSet resultSet = ps.executeQuery();
+            resultSet.next();
+            return resultSet.getLong("id");
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     public User findUserById(Long userId) throws SQLException {
-        ps = cm.getConnection().prepareStatement(findUserByIdSQL);
-        ps.setLong(1, userId);
-        ResultSet resultSet = ps.executeQuery();
 
-        if (!resultSet.next()) {
+        try {
+            ps = cm.getConnection().prepareStatement(findUserByIdSQL);
+            ps.setLong(1, userId);
+            ResultSet resultSet = ps.executeQuery();
+
+            if (!resultSet.next()) {
+                return null;
+            }
+
+            User user = new User();
+
+            user.setAge(resultSet.getInt("age"));
+            user.setId(userId);
+            user.setFirstName(resultSet.getString("firstname"));
+            user.setLastName(resultSet.getString("lastname"));
+
+            return user;
+        } catch (Exception ex) {
             return null;
         }
-
-        User user = new User();
-
-        user.setAge(resultSet.getInt("age"));
-        user.setId(userId);
-        user.setFirstName(resultSet.getString("firstname"));
-        user.setLastName(resultSet.getString("lastname"));
-
-        return user;
     }
 
     public User findUserByName(String userName) throws SQLException {
-        ps = cm.getConnection().prepareStatement(findUserByNameSQL);
-        ps.setString(1, userName);
-        ResultSet resultSet = ps.executeQuery();
 
-        if (resultSet.next()) {
-            User user = new User();
+        try {
+            ps = cm.getConnection().prepareStatement(findUserByNameSQL);
+            ps.setString(1, userName);
+            ResultSet resultSet = ps.executeQuery();
 
-            user.setAge(resultSet.getInt("age"));
-            user.setId(resultSet.getLong("id"));
-            user.setFirstName(resultSet.getString("firstname"));
-            user.setLastName(resultSet.getString("lastname"));
-            return user;
+            if (resultSet.next()) {
+                User user = new User();
+
+                user.setAge(resultSet.getInt("age"));
+                user.setId(resultSet.getLong("id"));
+                user.setFirstName(resultSet.getString("firstname"));
+                user.setLastName(resultSet.getString("lastname"));
+                return user;
+            }
+            return null;
+        } catch (Exception ex) {
+            return null;
         }
-        return null;
     }
 
     public List<User> findAllUser() throws SQLException {
-        ps = cm.getConnection().prepareStatement(findAllUserSQL);
-        ResultSet resultSet = ps.executeQuery();
 
-        List<User> users = new ArrayList<>();
 
-        while (resultSet.next()) {
-            User user = new User();
+        try {
+            ps = cm.getConnection().prepareStatement(findAllUserSQL);
+            ResultSet resultSet = ps.executeQuery();
 
-            user.setAge(resultSet.getInt("age"));
-            user.setId(resultSet.getLong("id"));
-            user.setFirstName(resultSet.getString("firstname"));
-            user.setLastName(resultSet.getString("lastname"));
+            List<User> users = new ArrayList<>();
 
-            users.add(user);
+            while (resultSet.next()) {
+                User user = new User();
+
+                user.setAge(resultSet.getInt("age"));
+                user.setId(resultSet.getLong("id"));
+                user.setFirstName(resultSet.getString("firstname"));
+                user.setLastName(resultSet.getString("lastname"));
+
+                users.add(user);
+            }
+
+            return users;
+        } catch (Exception ex) {
+            return null;
         }
-
-        return users;
     }
 
     public User updateUser(User user) throws SQLException {
 
-        User userById = findUserById(user.getId());
-
-        System.out.println(userById);
-
-        if (userById == null) return null;
-
-
         try {
-            ps = cm.getConnection().prepareStatement(updateUserSQL);
+
+            User userById = findUserById(user.getId());
+
+            System.out.println(userById);
+
+            if (userById == null) return null;
 
 
-            if (user.getFirstName() == null)
-                user.setFirstName(userById.getFirstName());
-
-            if (user.getLastName() == null)
-                user.setLastName(userById.getLastName());
-
-            if (user.getAge() == -1)
-                user.setAge(userById.getAge());
-
-            ps.setString(1, user.getFirstName());
-            ps.setString(2, user.getLastName());
-            ps.setInt(3, user.getAge());
-            ps.setLong(4, user.getId());
-
-            ps.executeUpdate();
+            try {
+                ps = cm.getConnection().prepareStatement(updateUserSQL);
 
 
-        } catch (Exception exception) {
-            exception.printStackTrace();
+                if (user.getFirstName() == null)
+                    user.setFirstName(userById.getFirstName());
+
+                if (user.getLastName() == null)
+                    user.setLastName(userById.getLastName());
+
+                if (user.getAge() == -1)
+                    user.setAge(userById.getAge());
+
+                ps.setString(1, user.getFirstName());
+                ps.setString(2, user.getLastName());
+                ps.setInt(3, user.getAge());
+                ps.setLong(4, user.getId());
+
+                ps.executeUpdate();
+
+
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+
+            return userById;
+
+        } catch (Exception ex) {
+            return null;
         }
-
-        return userById;
 
     }
 
     public void deleteUser(Long userId) throws SQLException {
-        ps = cm.getConnection().prepareStatement(deleteUser);
-        ps.setLong(1, userId);
-        ps.execute();
+
+        try {
+            ps = cm.getConnection().prepareStatement(deleteUser);
+            ps.setLong(1, userId);
+            ps.execute();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
