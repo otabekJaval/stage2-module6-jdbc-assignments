@@ -32,7 +32,7 @@ public class SimpleJDBCRepository {
     private Statement st = null;
 
 //    public static void main(String[] args) {
-//
+
 //        SimpleJDBCRepository smr = new SimpleJDBCRepository();
 //        try {
 //            System.out.println("smr.createUser() = " + smr.createUser(new User(null,"Torres","Migel",18))); // passed
@@ -40,13 +40,16 @@ public class SimpleJDBCRepository {
 //            smr.deleteUser(2L);
 //            System.out.println("smr.findAllUser() = " + smr.findAllUser());
 //            System.out.println(smr.findUserByName("Jack"));
+
+//            System.out.println(smr.updateUser(new User(2L, null, "Munchen", -1)));
+
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
 //        }
 //    }
 
     private static final String createUserSQL = "insert into myusers (firstname,lastname,age)values (?,?,?)returning id;";
-    private static final String updateUserSQL = "update myusers t set t.firstname=?,t.lastname=?, t.age=?;";
+    private static final String updateUserSQL = "update public.myusers set firstname=?, lastname=?, age=? where id=?";
     private static final String deleteUser = "delete from myusers where id=?;";
     private static final String findUserByIdSQL = "select * from myusers t where t.id=?;";
     private static final String findUserByNameSQL = "select * from myusers t where t.firstname=?;";
@@ -72,9 +75,6 @@ public class SimpleJDBCRepository {
             return null;
         }
 
-        if (resultSet.isLast()) {
-            return null;
-        }
         User user = new User();
 
         user.setAge(resultSet.getInt("age"));
@@ -122,9 +122,42 @@ public class SimpleJDBCRepository {
         return users;
     }
 
-    public User updateUser() throws SQLException {
-        ps = cm.getConnection().prepareStatement(updateUserSQL);
-        return findUserById(1L);
+    public User updateUser(User user) throws SQLException {
+
+        User userById = findUserById(user.getId());
+
+        System.out.println(userById);
+
+        if (userById == null) return null;
+
+
+        try {
+            ps = cm.getConnection().prepareStatement(updateUserSQL);
+
+
+            if (user.getFirstName() == null)
+                user.setFirstName(userById.getFirstName());
+
+            if (user.getLastName() == null)
+                user.setLastName(userById.getLastName());
+
+            if (user.getAge() == -1)
+                user.setAge(userById.getAge());
+
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setInt(3, user.getAge());
+            ps.setLong(4, user.getId());
+
+            ps.executeUpdate();
+
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
+        return userById;
+
     }
 
     public void deleteUser(Long userId) throws SQLException {
