@@ -34,7 +34,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: com.oracle.database.ha:simplefan:19.3.0.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.oracle.database.ha:ons:19.3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.24" level="project" />
-    <orderEntry type="library" name="Maven: org.postgresql:postgresql:42.5.0" level="project" />
+    <orderEntry type="library" name="Maven: org.postgresql:postgresql:42.5.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.checkerframework:checker-qual:3.5.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.5" level="project" />
     <orderEntry type="library" name="Maven: org.ow2.asm:asm-commons:5.0.3" level="project" />
