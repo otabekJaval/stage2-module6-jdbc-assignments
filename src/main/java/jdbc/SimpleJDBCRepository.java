@@ -28,21 +28,21 @@ public class SimpleJDBCRepository {
     }
 
     private Connection connection = cm.getConnection();
-    private PreparedStatement ps = null;
+    private PreparedStatement ps;
     private Statement st = null;
 
 //    public static void main(String[] args) {
-
+//
 //        SimpleJDBCRepository smr = new SimpleJDBCRepository();
 //        try {
 //            System.out.println("smr.createUser() = " + smr.createUser(new User(null,"Torres","Migel",18))); // passed
 //            System.out.println("smr.findUserById(1) = " + smr.findUserById(1L));
 //            smr.deleteUser(2L);
 //            System.out.println("smr.findAllUser() = " + smr.findAllUser());
-//            System.out.println(smr.findUserByName("Jack"));
-
-//            System.out.println(smr.updateUser(new User(2L, null, "Munchen", -1)));
-
+//            System.out.println(smr.findUserByName("Torres"));
+//
+//            System.out.println(smr.updateUser(new User(3L, null, "Munchen", -1)));
+//
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
 //        }
