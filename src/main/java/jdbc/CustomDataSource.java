@@ -35,7 +35,7 @@ public class CustomDataSource implements DataSource {
     public static CustomDataSource getInstance() {
         if (instance == null) {
 
-            synchronized (MONITOR) {
+            synchronized (CustomDataSource.class) {
 
                 if (instance == null) {
                     try {
